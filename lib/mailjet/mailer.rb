@@ -36,6 +36,8 @@ class Mailjet::APIMailer
     else
       content = (mail.mime_type == "text/html") ? {:html => mail.body.decoded} : {:text => mail.body.decoded}
     end
+    
+    reply_to_header_or_empty_hash = mail.reply_to.blank? ? {} : { 'Reply-To' => mail.reply_to.join(", ") }
 
     payload = {
       :from => mail.from || Mailjet.config.default_from,
@@ -44,7 +46,7 @@ class Mailjet::APIMailer
       :cc => mail.cc,
       :bcc => mail.bcc,
       :subject => mail.subject,
-      :header => { 'ReplyTo' => mail.reply_to }.merge(@delivery_method_options[:header]),
+      :header => reply_to_header_or_empty_hash.merge(@headers ? @headers : {}),
       :'mj-customid' => mail['X-MJ-CustomID'] && mail['X-MJ-CustomID'].value,
       :'mj-eventpayload' => mail['X-MJ-EventPayload'] && mail['X-MJ-EventPayload'].value
     }.merge(content).merge(@delivery_method_options)
