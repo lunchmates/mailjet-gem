@@ -44,6 +44,7 @@ class Mailjet::APIMailer
       :cc => mail.cc,
       :bcc => mail.bcc,
       :subject => mail.subject,
+      :header => { 'ReplyTo' => mail.reply_to }.merge(@delivery_method_options[:header]),
       :'mj-customid' => mail['X-MJ-CustomID'] && mail['X-MJ-CustomID'].value,
       :'mj-eventpayload' => mail['X-MJ-EventPayload'] && mail['X-MJ-EventPayload'].value
     }.merge(content).merge(@delivery_method_options)
